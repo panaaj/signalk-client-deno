@@ -1,11 +1,11 @@
-import { Alarm, AlarmType, Path } from './utils.ts';
-import { SKServer } from './signalk-client.ts'
-import { debug } from './mod.ts'
+import { Alarm, AlarmType, Path } from "./utils.ts";
+import { SKServer } from "./signalk-client.ts";
+import { debug } from "./mod.ts";
 
 export class SignalKHttp {
   private _token = "";
 
-  public server: SKServer = {version: '', id: ''};
+  public server: SKServer = { version: "", id: "" };
   public endpoint = "";
   public version = 1;
 
@@ -18,27 +18,27 @@ export class SignalKHttp {
 
   constructor() {}
 
-  // ** get the contents of the Signal K tree pointed to by self. returns: Observable
-  getSelf(): Promise<{[key:string]:unknown}> {
+  // ** get the contents of the Signal K tree pointed to by self. returns: Promise
+  getSelf(): Promise<{ [key: string]: unknown }> {
     return this.get(`vessels/self`);
   }
 
-  //** get ID of vessel self via http. returns: Observable
-  getSelfId(): Promise<{[key:string]:unknown}> {
+  //** get ID of vessel self via http. returns: Promise
+  getSelfId(): Promise<{ [key: string]: unknown }> {
     return this.get(`self`);
   }
 
   // ** return observable response for meta object at the specified context and path
-  getMeta(context: string, path: string): Promise<{[key:string]:unknown}> {
+  getMeta(context: string, path: string): Promise<{ [key: string]: unknown }> {
     return this.get(
       `${Path.contextToPath(context)}/${Path.dotToSlash(path)}/meta`,
     );
   }
 
-  //** get API path value via http. returns: Observable
+  //** get API path value via http. returns: Promise
 
-  async get(path: string): Promise<{[key:string]:unknown}>;
-  async get(version: number, path: string): Promise<{[key:string]:unknown}>;
+  async get(path: string): Promise<{ [key: string]: unknown }>;
+  async get(version: number, path: string): Promise<{ [key: string]: unknown }>;
   async get(p1: any, p2?: any) {
     if (!this.endpoint) {
       return;
@@ -75,7 +75,7 @@ export class SignalKHttp {
     }
   }
 
-  //** send value to API path via http PUT. returns: Observable
+  //** send value to API path via http PUT. returns: Promise
   async put(path: string, value: any): Promise<Response>;
   async put(version: number, path: string, value: any): Promise<Response>;
   async put(p1: any, p2: string, p3?: any) {
@@ -116,8 +116,12 @@ export class SignalKHttp {
     return await fetch(url, options);
   }
 
-  //** send value to API path via http PUT. returns: Observable
-  async putWithContext(context: string, path: string, value: any): Promise<Response>;
+  //** send value to API path via http PUT. returns: Promise
+  async putWithContext(
+    context: string,
+    path: string,
+    value: any,
+  ): Promise<Response>;
   async putWithContext(
     version: number,
     context: string,
@@ -165,7 +169,7 @@ export class SignalKHttp {
     return await fetch(url, options);
   }
 
-  //** send value to API path via http POST. returns: Observable
+  //** send value to API path via http POST. returns: Promise
   async post(path: string, value: any): Promise<Response>;
   async post(version: number, path: string, value: any): Promise<Response>;
   async post(p1: any, p2: string, p3?: any) {
@@ -202,7 +206,7 @@ export class SignalKHttp {
     return await fetch(url, options);
   }
 
-  //** delete value from API path via http DELETE. returns: Observable
+  //** delete value from API path via http DELETE. returns: Promise
   async delete(path: string): Promise<Response>;
   async delete(version: number, path: string): Promise<Response>;
   async delete(p1: any, p2?: any) {
@@ -235,7 +239,7 @@ export class SignalKHttp {
     return await fetch(url, options);
   }
 
-  // ** raise alarm for path (name), returns: Observable
+  // ** raise alarm for path (name), returns: Promise
   raiseAlarm(context: string, name: string, alarm: Alarm): Promise<Response>;
   raiseAlarm(context: string, type: AlarmType, alarm: Alarm): Promise<Response>;
   raiseAlarm(context = "*", alarmId: string | AlarmType, alarm: Alarm) {
@@ -250,7 +254,7 @@ export class SignalKHttp {
     return this.putWithContext(context, path, alarm.value);
   }
 
-  // ** raise alarm for path (name), returns: Observable
+  // ** raise alarm for path (name), returns: Promise
   clearAlarm(context = "*", name: string): Promise<Response> {
     const path = name.indexOf("notifications.") === -1
       ? `notifications.${name}`
