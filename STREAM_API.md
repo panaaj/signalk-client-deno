@@ -171,7 +171,7 @@ the specified user.
 _Example:_
 
 ```javascript
-signalk.stream.authToken = "<auth_token_string>";
+signalk.stream.authToken = '<auth_token_string>';
 ```
 
 Once you have supplied an `authToken` it will be used for all subsequent
@@ -482,17 +482,17 @@ _Example:_
 
 ```javascript
 // **** subscribe using defaults ****
-signalk.stream.subscribe("self", "navigation.courseOverGroundTrue");
+signalk.stream.subscribe('self', 'navigation.courseOverGroundTrue');
 
 // **** subscribe using some specified options ****
-signalk.stream.subscribe("self", "navigation.courseOverGroundTrue", {
+signalk.stream.subscribe('self', 'navigation.courseOverGroundTrue', {
   period: 2000,
 });
 
 // **** subscribe to a numbe rof paths ****
-signalk.stream.subscribe("self", [
-  { path: "navigation.courseOverGroundTrue", period: 2000 },
-  { path: "navigation.speedOverGround", period: 2000 },
+signalk.stream.subscribe('self', [
+  { path: 'navigation.courseOverGroundTrue', period: 2000 },
+  { path: 'navigation.speedOverGround', period: 2000 },
 ]);
 
 // **** subscribe to all updates ****
@@ -517,11 +517,11 @@ _Examples:_
 
 ```javascript
 // **** unsubscribe from specific updates ****
-signalk.stream.unsubscribe("self", "navigation.courseOverGroundTrue");
+signalk.stream.unsubscribe('self', 'navigation.courseOverGroundTrue');
 
-signalk.stream.unsubscribe("self", [
-  "navigation.courseOverGroundTrue",
-  "navigation.speedOverGround",
+signalk.stream.unsubscribe('self', [
+  'navigation.courseOverGroundTrue',
+  'navigation.speedOverGround',
 ]);
 
 // **** unsubscribe from all updates ****
@@ -547,10 +547,10 @@ _Examples:_
 
 ```javascript
 signalk.stream.raiseAlarm(
-  "self",
-  "Anchor",
+  'self',
+  'Anchor',
   new Alarm(
-    "Anchor dragging!",
+    'Anchor dragging!',
     AlarmState.alarm,
     true,
     true,
@@ -559,10 +559,10 @@ signalk.stream.raiseAlarm(
 
 // ** using special alarm type **
 signalk.stream.raiseAlarm(
-  "self",
+  'self',
   AlarmType.sinking,
   new Alarm(
-    "SINKING",
+    'SINKING',
     AlarmState.alarm,
     true,
     true,
@@ -585,7 +585,7 @@ _Parameters:_
 _Examples:_
 
 ```javascript
-signalk.stream.clearAlarm("self", "MOB");
+signalk.stream.clearAlarm('self', 'MOB');
 ```
 
 ---

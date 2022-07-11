@@ -267,10 +267,10 @@ _Examples:_
 
 ```javascript
 signalk.api.raiseAlarm(
-  "self",
-  "Anchor",
+  'self',
+  'Anchor',
   new Alarm(
-    "Anchor dragging!",
+    'Anchor dragging!',
     AlarmState.alarm,
     true,
     true,
@@ -280,10 +280,10 @@ signalk.api.raiseAlarm(
 // ** using special alarm type **
 
 signalk.api.raiseAlarm(
-  "self",
+  'self',
   AlarmType.sinking,
   new Alarm(
-    "SINKING",
+    'SINKING',
     AlarmState.alarm,
     true,
     true,
@@ -308,7 +308,7 @@ _Returns_: Promise
 _Examples:_
 
 ```javascript
-signalk.api.clearAlarm("self", "MOB");
+signalk.api.clearAlarm('self', 'MOB');
 ```
 
 ---
