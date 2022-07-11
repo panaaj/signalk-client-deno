@@ -15,7 +15,7 @@ export class UUID {
   private limitUI48;
 
   private version = 4;
-  private hex = "";
+  private hex = '';
 
   constructor() {
     this.limitUI04 = this.maxFromBits(4);
@@ -35,13 +35,13 @@ export class UUID {
     return this.hex;
   }
   toURN() {
-    return "urn:uuid:" + this.hex;
+    return 'urn:uuid:' + this.hex;
   }
   toSignalK(): string {
     return `urn:mrn:signalk:uuid:${this.hex}`;
   }
   toBytes() {
-    const parts = this.hex.split("-");
+    const parts = this.hex.split('-');
     const ints: number[] = [];
     let intPos = 0;
     for (let i = 0; i < parts.length; i++) {
@@ -107,7 +107,7 @@ export class UUID {
 
   private paddedString(string: string, length: number, z?: string) {
     string = String(string);
-    z = !z ? "0" : z;
+    z = !z ? '0' : z;
     let i = length - string.length;
     for (; i > 0; i >>>= 1, z += z) {
       if (i & 1) {
@@ -127,14 +127,14 @@ export class UUID {
   ) {
     this.version = (timeHiAndVersion >> 12) & 0xf;
     this.hex = this.paddedString(timeLow.toString(16), 8) +
-      "-" +
+      '-' +
       this.paddedString(timeMid.toString(16), 4) +
-      "-" +
+      '-' +
       this.paddedString(timeHiAndVersion.toString(16), 4) +
-      "-" +
+      '-' +
       this.paddedString(clockSeqHiAndReserved.toString(16), 2) +
       this.paddedString(clockSeqLow.toString(16), 2) +
-      "-" +
+      '-' +
       this.paddedString(node.toString(16), 12);
     return this;
   }

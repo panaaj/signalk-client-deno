@@ -3,11 +3,11 @@
 
 export class SignalKApps {
   // ** apps api endpoint path
-  public endpoint = "";
+  public endpoint = '';
 
   // ** return List of installed apps
   async list() {
-    const ep = this.endpoint.indexOf("webapps") == -1
+    const ep = this.endpoint.indexOf('webapps') == -1
       ? `${this.endpoint}list`
       : this.endpoint;
     const response = await fetch(ep);

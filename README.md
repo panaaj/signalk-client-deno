@@ -307,7 +307,7 @@ the specified user.
 _Example:_
 
 ```javascript
-signalk.authToken = "<auth_token_string>";
+signalk.authToken = '<auth_token_string>';
 ```
 
 Once you have supplied an `authToken` it will be used for all subsequent
@@ -417,7 +417,7 @@ _Example:_
 
 ```javascript
 // **** make Discovery request ****
-const response = await signalk.hello("myServer", 80, false);
+const response = await signalk.hello('myServer', 80, false);
 ```
 
 ---
@@ -445,7 +445,7 @@ _Returns_: Promise
 _Example:_
 
 ```javascript
-const response = await signalk.connect("myServer", 80, false);
+const response = await signalk.connect('myServer', 80, false);
 ```
 
 ---
@@ -857,13 +857,11 @@ valid `authToken` an Error event will be triggered to notify of this situation._
 
 ---
 
-`login(user, password): Promise<Response>`
+`login(user, password): Promise`
 
 Authenticate with Signal K server and if successful apply the supplied
 `JWT token` value to `authToken` so it is used in subsequent operations so it is
 used in subsequent operations.
-
-The Response from the server is returned.
 
 _Parameters:_
 
@@ -871,22 +869,56 @@ _Parameters:_
 
 -_password_: User's password
 
-_Returns_: Promise containing a Response object.
+_Returns_: Promise containing object.
+```javascript
+    {
+      ok: true, //value of response ok
+      status: 200, // value of response status
+      token: '...' // auth token
+    }
+```
 
 _Example:_
 
 ```javascript
-const response = await signalk.hello(myserver, 80, false);
+const response = await signalk.connect(myserver, 80, false);
 
 // ** login
-const response = await signalk.login("myuser", "mypassword");
-if (response.ok) {
-  const cookies = response.headers.get("set-cookie");
-  // JAUTHENTICATION cookie contains the token
-}
+const response = await signalk.login('myuser', 'mypassword');
 ```
 
 ---
+
+`validate(): Promise`
+
+Validates  / renews the auth token.
+
+_Parameters:_
+
+-_user_: User name
+
+-_password_: User's password
+
+_Returns_: Promise containing object.
+```javascript
+    {
+      ok: true, //value of response ok
+      status: 200, // value of response status
+      token: '...' // auth token
+    }
+```
+
+_Example:_
+
+```javascript
+const response = await signalk.connect(myserver, 80, false);
+
+// ** login
+const response = await signalk.validate();
+```
+
+---
+
 
 `logout()`
 
@@ -929,7 +961,7 @@ _Parameters:_
 _Example:_
 
 ```javascript
-signalk.setAppId("myapp");
+signalk.setAppId('myapp');
 ```
 
 ---
@@ -948,7 +980,7 @@ server.
 _Example:_
 
 ```javascript
-signalk.setAppVersion("1.1");
+signalk.setAppVersion('1.1');
 ```
 
 ---
@@ -969,7 +1001,7 @@ _Returns_: Promise
 _Example:_
 
 ```javascript
-signalk.appDataVersions("user", "myapp");
+signalk.appDataVersions('user', 'myapp');
 ```
 
 ---
@@ -996,7 +1028,7 @@ _Returns_: Promise.
 _Example:_
 
 ```javascript
-signalk.appDataKeys("vessel/speed", "user", "myapp", "1.0");
+signalk.appDataKeys('vessel/speed', 'user', 'myapp', '1.0');
 ```
 
 ---
@@ -1023,7 +1055,7 @@ _Returns_: Promise.
 _Example:_
 
 ```javascript
-signalk.appDataGet("vessel/speed", "user", "myapp", "1.0");
+signalk.appDataGet('vessel/speed', 'user', 'myapp', '1.0');
 ```
 
 ---
@@ -1051,7 +1083,7 @@ _Returns_: Promise.
 _Example:_
 
 ```javascript
-signalk.appDataSet("vessel/speed/sog", 1.5, "user", "myapp", "1.0");
+signalk.appDataSet('vessel/speed/sog', 1.5, 'user', 'myapp', '1.0');
 ```
 
 ---
@@ -1081,12 +1113,12 @@ _Example:_
 ```javascript
 signalk.appDataPatch(
   [
-    { "op": "add", "path": "/vessel/speed", "value": { sog: 1.25 } },
-    { "op": "remove", "path": "/vessel/speed/stw" },
+    { 'op': 'add', 'path': '/vessel/speed', 'value': { sog: 1.25 } },
+    { 'op': 'remove', 'path': '/vessel/speed/stw' },
   ],
-  "user",
-  "myapp",
-  "1.0",
+  'user',
+  'myapp',
+  '1.0',
 );
 ```
 

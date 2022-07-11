@@ -1,20 +1,20 @@
-import { UUID } from "./uuid.ts";
+import { UUID } from './uuid.ts';
 
 // ** Path utilities
 export class Path {
   // ** transform dot notation to slash
   static dotToSlash(path: string): string {
-    const p = path.split("?");
-    if (p[0].indexOf(".") != -1) {
-      p[0] = p[0].split(".").join("/");
+    const p = path.split('?');
+    if (p[0].indexOf('.') != -1) {
+      p[0] = p[0].split('.').join('/');
     }
-    return p.join("?");
+    return p.join('?');
   }
 
   // ** parse context to valid Signal K path
   static contextToPath(context: string): string {
-    const res = context === "self" ? "vessels.self" : context;
-    return res.split(".").join("/");
+    const res = context === 'self' ? 'vessels.self' : context;
+    return res.split('.').join('/');
   }
 }
 
@@ -62,7 +62,7 @@ export class Message {
 export class Alarm {
   private _state: AlarmState;
   private _method: Array<AlarmMethod> = [];
-  private _message = "";
+  private _message = '';
 
   constructor(
     message: string,
@@ -70,8 +70,8 @@ export class Alarm {
     visual?: boolean,
     sound?: boolean,
   ) {
-    this._message = typeof message !== "undefined" ? message : "";
-    this._state = typeof state !== "undefined" ? state : AlarmState.alarm;
+    this._message = typeof message !== 'undefined' ? message : '';
+    this._state = typeof state !== 'undefined' ? state : AlarmState.alarm;
     if (visual) {
       this._method.push(AlarmMethod.visual);
     }
@@ -90,27 +90,27 @@ export class Alarm {
 }
 
 export enum AlarmState {
-  normal = "normal",
-  alert = "alert",
-  warn = "warn",
-  alarm = "alarm",
-  emergency = "emergency",
+  normal = 'normal',
+  alert = 'alert',
+  warn = 'warn',
+  alarm = 'alarm',
+  emergency = 'emergency',
 }
 
 export enum AlarmMethod {
-  visual = "visual",
-  sound = "sound",
+  visual = 'visual',
+  sound = 'sound',
 }
 
 export enum AlarmType {
-  mob = "notifications.mob",
-  fire = "notifications.fire",
-  sinking = "notifications.sinking",
-  flooding = "notifications.flooding",
-  collision = "notifications.collision",
-  grounding = "notifications.grounding",
-  listing = "notifications.listing",
-  adrift = "notifications.adrift",
-  piracy = "notifications.piracy",
-  abandon = "notifications.abandon",
+  mob = 'notifications.mob',
+  fire = 'notifications.fire',
+  sinking = 'notifications.sinking',
+  flooding = 'notifications.flooding',
+  collision = 'notifications.collision',
+  grounding = 'notifications.grounding',
+  listing = 'notifications.listing',
+  adrift = 'notifications.adrift',
+  piracy = 'notifications.piracy',
+  abandon = 'notifications.abandon',
 }
