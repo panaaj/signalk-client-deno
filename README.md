@@ -1,6 +1,6 @@
 # Signal K client for Deno
 
-**signalk-client** is a library to facilitate communication with a Signal K
+**signalk_client** is a library to facilitate communication with a Signal K
 server.
 
 It provides the following classes to interact with the Signal K `HTTP` and
