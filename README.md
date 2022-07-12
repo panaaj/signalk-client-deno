@@ -226,6 +226,7 @@ _Follow the links for the relevant documentation._
 - `version`
 - `authToken`
 - `uuid`
+- `signalkUuid`
 - `proxied`
 
 [Methods](#methods)
@@ -307,7 +308,7 @@ the specified user.
 _Example:_
 
 ```javascript
-signalk.authToken = '<auth_token_string>';
+signalk.authToken = "<auth_token_string>";
 ```
 
 Once you have supplied an `authToken` it will be used for all subsequent
@@ -317,22 +318,26 @@ operations.
 
 `uuid`:
 
-Provides a convenient way to generate a v4 UUID object which has two methods:
-
-- `toString()`: Returns a v4 UUID string
-
-- `toSignalK()`: Returns a formatted Signal K resource identifier
+Returns a v4 UUID string
 
 _Example:_
 
 ```javascript
 let uuid = signalk.uuid;
 
-uuid.toString();
-
 // returns 27b88354-9fe0-4952-9ce6-c9d4eaea6d9e
+```
 
-uuid.toSignalK();
+---
+
+`signalkUuid`:
+
+Returns a formatted Signal K resource identifier
+
+_Example:_
+
+```javascript
+let uuid = signalk.signalkUuid;
 
 // returns urn:mrn:signalk:uuid:27b88354-9fe0-4952-9ce6-c9d4eaea6d9e
 ```
@@ -417,7 +422,7 @@ _Example:_
 
 ```javascript
 // **** make Discovery request ****
-const response = await signalk.hello('myServer', 80, false);
+const response = await signalk.hello("myServer", 80, false);
 ```
 
 ---
@@ -445,7 +450,7 @@ _Returns_: Promise
 _Example:_
 
 ```javascript
-const response = await signalk.connect('myServer', 80, false);
+const response = await signalk.connect("myServer", 80, false);
 ```
 
 ---
@@ -870,12 +875,13 @@ _Parameters:_
 -_password_: User's password
 
 _Returns_: Promise containing object.
+
 ```javascript
-    {
-      ok: true, //value of response ok
-      status: 200, // value of response status
-      token: '...' // auth token
-    }
+{
+  ok: true, //value of response ok
+  status: 200, // value of response status
+  token: '...' // auth token
+}
 ```
 
 _Example:_
@@ -884,14 +890,14 @@ _Example:_
 const response = await signalk.connect(myserver, 80, false);
 
 // ** login
-const response = await signalk.login('myuser', 'mypassword');
+const response = await signalk.login("myuser", "mypassword");
 ```
 
 ---
 
 `validate(): Promise`
 
-Validates  / renews the auth token.
+Validates / renews the auth token.
 
 _Parameters:_
 
@@ -900,12 +906,13 @@ _Parameters:_
 -_password_: User's password
 
 _Returns_: Promise containing object.
+
 ```javascript
-    {
-      ok: true, //value of response ok
-      status: 200, // value of response status
-      token: '...' // auth token
-    }
+{
+  ok: true, //value of response ok
+  status: 200, // value of response status
+  token: '...' // auth token
+}
 ```
 
 _Example:_
@@ -918,7 +925,6 @@ const response = await signalk.validate();
 ```
 
 ---
-
 
 `logout()`
 
@@ -961,7 +967,7 @@ _Parameters:_
 _Example:_
 
 ```javascript
-signalk.setAppId('myapp');
+signalk.setAppId("myapp");
 ```
 
 ---
@@ -980,7 +986,7 @@ server.
 _Example:_
 
 ```javascript
-signalk.setAppVersion('1.1');
+signalk.setAppVersion("1.1");
 ```
 
 ---
@@ -1001,7 +1007,7 @@ _Returns_: Promise
 _Example:_
 
 ```javascript
-signalk.appDataVersions('user', 'myapp');
+signalk.appDataVersions("user", "myapp");
 ```
 
 ---
@@ -1028,7 +1034,7 @@ _Returns_: Promise.
 _Example:_
 
 ```javascript
-signalk.appDataKeys('vessel/speed', 'user', 'myapp', '1.0');
+signalk.appDataKeys("vessel/speed", "user", "myapp", "1.0");
 ```
 
 ---
@@ -1055,7 +1061,7 @@ _Returns_: Promise.
 _Example:_
 
 ```javascript
-signalk.appDataGet('vessel/speed', 'user', 'myapp', '1.0');
+signalk.appDataGet("vessel/speed", "user", "myapp", "1.0");
 ```
 
 ---
@@ -1083,7 +1089,7 @@ _Returns_: Promise.
 _Example:_
 
 ```javascript
-signalk.appDataSet('vessel/speed/sog', 1.5, 'user', 'myapp', '1.0');
+signalk.appDataSet("vessel/speed/sog", 1.5, "user", "myapp", "1.0");
 ```
 
 ---
@@ -1113,12 +1119,12 @@ _Example:_
 ```javascript
 signalk.appDataPatch(
   [
-    { 'op': 'add', 'path': '/vessel/speed', 'value': { sog: 1.25 } },
-    { 'op': 'remove', 'path': '/vessel/speed/stw' },
+    { "op": "add", "path": "/vessel/speed", "value": { sog: 1.25 } },
+    { "op": "remove", "path": "/vessel/speed/stw" },
   ],
-  'user',
-  'myapp',
-  '1.0',
+  "user",
+  "myapp",
+  "1.0",
 );
 ```
 
