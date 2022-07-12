@@ -16,6 +16,7 @@ interface EndPoint {
   "signalk-ws": string;
 }
 
+/** Signal K Server information */
 export interface SKServer {
   version: string;
   id: string;
@@ -38,6 +39,7 @@ interface JSON_Patch {
   value: unknown;
 }
 
+/** Application data contexts */
 export enum APPDATA_CONTEXT {
   USER = "user",
   GLOBAL = "global",

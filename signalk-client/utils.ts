@@ -1,3 +1,5 @@
+
+/** Signal K stream subscripton. */
 export interface Subscription {
   path: string;
   period?: number;
