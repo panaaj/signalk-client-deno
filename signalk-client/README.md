@@ -6,13 +6,12 @@ server.
 It provides the following classes to interact with the Signal K `HTTP` and
 `STREAM` APIs as well as exposing STREAM `Events`:
 
-You can find the [documentation here.](https://github.com/panaaj/signalk-client-deno/blob/master/README.md)
-
+You can find the
+[documentation here.](https://github.com/panaaj/signalk-client-deno/blob/master/README.md)
 
 ---
 
 ## Getting started
-
 
 The simplest way to get started is to connect to a Signal K server and open a
 websocket to its data stream.
@@ -55,4 +54,3 @@ signalk.stream.events.on(
 // **** CONNECT to Server and open STREAM ****
 signalk.connectStream('192.168.99.100', 80, false, 'self');
 ```
-
