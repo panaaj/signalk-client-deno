@@ -4,13 +4,22 @@ import { debug } from "./mod.ts";
 
 /** Signal K HTTP API operations */
 export class SignalKHttp {
+
+  /** Authentication token
+   * @private 
+   */
   private _token = "";
 
+  /** Signal K server information */
   public server: SKServer = { version: "", id: "" };
+  /** Connection endpoint */
   public endpoint = "";
+  /** API version to use */
   public version = 1;
 
-  // ** set auth token value **
+  /** set auth token value 
+   * @param val Authentication token value
+  */
   set authToken(val: string) {
     this._token = val;
   }
@@ -24,19 +33,27 @@ export class SignalKHttp {
     return this.get(`vessels/self`);
   }
 
-  /** Retrieve ID of vessel self via http.*/
+  /** Retrieve self vessel identifier.*/
   getSelfId(): Promise<{ [key: string]: unknown }> {
     return this.get(`self`);
   }
 
-  /** Retrieve meta object at the specified context and path */
+  /** Retrieve meta object at the specified context and path 
+   * @param context Signal K context
+   * @param path Signal K path value
+  */
   getMeta(context: string, path: string): Promise<{ [key: string]: unknown }> {
     return this.get(
       `${Path.contextToPath(context)}/${Path.dotToSlash(path)}/meta`,
     );
   }
 
-  /** Get API path value via HTTP */
+  /** Get API path value via HTTP 
+   * @param path Signal K path value
+  *//** Get API path value via HTTP 
+   * @param version API version to use.
+   * @param path Signal K path value
+  */
   async get(path: string): Promise<{ [key: string]: unknown }>;
   async get(version: number, path: string): Promise<{ [key: string]: unknown }>;
   async get(p1: any, p2?: any) {
@@ -66,8 +83,9 @@ export class SignalKHttp {
     return response.json();
   }
 
-  /** Patch for v2 & above PUT handling of resourcesApi / courseApi
-   * @private
+  /** Patch for Siganl K API v2 & above PUT handling
+   * @param version API version to use.
+   * @param value Value to apply to target path.
    */
   private parseApiPut(version: number, value: any) {
     if (version > 1) {
@@ -77,7 +95,14 @@ export class SignalKHttp {
     }
   }
 
-  /** send value to API path via http PUT. */
+  /** Send value to API path via http PUT.
+   * @param path Signal K path value
+   * @param value Value to apply to target path.
+  *//** Send value to API path via http PUT.
+   * @param version API version to use.
+   * @param path Signal K path value
+   * @param value Value to apply to target path.
+  */
   async put(path: string, value: any): Promise<Response>;
   async put(version: number, path: string, value: any): Promise<Response>;
   async put(p1: any, p2: string, p3?: any) {
@@ -118,7 +143,17 @@ export class SignalKHttp {
     return await fetch(url, options);
   }
 
-  /** Send value to API path via http PUT. */
+  /** Send value to API path  and supplied context via http PUT.
+   * @param context Signal K context
+   * @param path Signal K path value
+   * @param value Value to apply to target path.
+  *//** Send value to API path  and supplied context via http PUT.
+  @param context Signal K context
+   * @param version API version to use.
+   * @param context Signal K context
+   * @param path Signal K path value
+   * @param value Value to apply to target path.
+  */
   async putWithContext(
     context: string,
     path: string,
@@ -171,7 +206,15 @@ export class SignalKHttp {
     return await fetch(url, options);
   }
 
-  /** Send value to API path via http POST. */
+
+  /** Send value to API path via http POST.
+   * @param path Signal K path value
+   * @param value Value to apply to target path.
+  *//** Send value to API path via http POST.
+   * @param version API version to use.
+   * @param path Signal K path value
+   * @param value Value to apply to target path.
+  */
   async post(path: string, value: any): Promise<Response>;
   async post(version: number, path: string, value: any): Promise<Response>;
   async post(p1: any, p2: string, p3?: any) {
@@ -208,7 +251,12 @@ export class SignalKHttp {
     return await fetch(url, options);
   }
 
-  /** Delete value from API path via http DELETE. */
+  /** Delete value from API path via http DELETE.
+   * @param path Signal K path value
+  *//** Delete value from API path via http DELETE..
+   * @param version API version to use.
+   * @param path Signal K path value
+  */
   async delete(path: string): Promise<Response>;
   async delete(version: number, path: string): Promise<Response>;
   async delete(p1: any, p2?: any) {
@@ -241,7 +289,15 @@ export class SignalKHttp {
     return await fetch(url, options);
   }
 
-  /** Raise alarm for path (name). */
+  /** Raise alarm with supplied name.
+   * @param context Signal K context
+   * @param name Alarm name.
+   * @param alarm Alarm object.
+  *//** Raise alarm with supplied name.
+   * @param context Signal K context
+   * @param type Alarm type.
+   * @param alarm Alarm object.
+  */
   raiseAlarm(context: string, name: string, alarm: Alarm): Promise<Response>;
   raiseAlarm(context: string, type: AlarmType, alarm: Alarm): Promise<Response>;
   raiseAlarm(context = "*", alarmId: string | AlarmType, alarm: Alarm) {
@@ -256,7 +312,10 @@ export class SignalKHttp {
     return this.putWithContext(context, path, alarm.value);
   }
 
-  /** Clear alarm for path (name). */
+  /** Clear alarm with supplied name. 
+   * @param context Signal K context
+   * @param name Alarm name.
+  */
   clearAlarm(context = "*", name: string): Promise<Response> {
     const path = name.indexOf("notifications.") === -1
       ? `notifications.${name}`

@@ -10,10 +10,9 @@ export interface Subscription {
 
 /** Signal K Path functions */
 export class Path {
-  /** transform dot notation to slash
-   * @static
-   * @param {string} path
-   * @returns {string}
+  /** transform path value from dot notation to slash notation
+   * @param path In dot notation e.g. navigation.position
+   * @returns Path in slash notation e.g. navigation/position
    */
   static dotToSlash(path: string): string {
     const p = path.split("?");
@@ -24,9 +23,8 @@ export class Path {
   }
 
   /** parse context to valid Signal K path
-   * @static
-   * @param {string} context
-   * @returns {string}
+   * @param context value in dot notation
+   * @returns context in slash notation
    */
   static contextToPath(context: string): string {
     const res = context === "self" ? "vessels.self" : context;
@@ -34,11 +32,10 @@ export class Path {
   }
 }
 
-/** Signal K Message class */
+/** Class with methods to return skeleton Signal K request payloads */
 export class Message {
-  /** return UPDATES message object
-   * @static
-   */
+
+  /** returns UPDATES message object */
   static updates(): {
     context: string | null;
     updates: Array<{ path: string; value: unknown }>;
@@ -48,10 +45,8 @@ export class Message {
       updates: [],
     };
   }
-  /**
-   * return SUBSCRIBE message object
-   * @static
-   */
+
+  /** returns SUBSCRIBE message object */
   static subscribe(): {
     context: string | null;
     subscribe: Array<Subscription>;
@@ -61,9 +56,8 @@ export class Message {
       subscribe: [],
     };
   }
-  /** return UNSUBSCRIBE message object
-   * @static
-   */
+
+  /** returns UNSUBSCRIBE message object */
   static unsubscribe(): {
     context: string | null;
     unsubscribe: Array<{ path: string }>;
@@ -73,9 +67,8 @@ export class Message {
       unsubscribe: [],
     };
   }
-  /** return REQUEST message object
-   * @static
-   */
+
+  /** returns REQUEST message object */
   static request(): { requestId: string } {
     return {
       requestId: crypto.randomUUID(),
@@ -91,15 +84,24 @@ interface AlarmMessage {
 
 /** Signal K Alarm class */
 export class Alarm {
+  /** Alarm State
+   * @private
+   */
   private _state: AlarmState;
+  /** Alarm Method
+   * @private
+   */
   private _method: Array<AlarmMethod> = [];
+  /** Alarm Message text
+   * @private
+   */
   private _message = "";
 
   /**
-   * @param {string} message
-   * @param {AlarmState} state
-   * @param {boolean} visual
-   * @param {boolean} sound
+   * @param message Alarm message text
+   * @param state Alarm state
+   * @param visual Set true for visual prompt
+   * @param sound Set true for audibile alarm
    */
   constructor(
     message: string,
@@ -117,7 +119,7 @@ export class Alarm {
     }
   }
 
-  /** Get object containing Alarm attributes. */
+  /** Returns object containing Alarm attributes. */
   get value(): AlarmMessage {
     return {
       message: this._message,
@@ -127,9 +129,7 @@ export class Alarm {
   }
 }
 
-/** AlarmState values
- * @enum
- */
+/** AlarmState values */
 export enum AlarmState {
   normal = "normal",
   alert = "alert",
@@ -138,17 +138,13 @@ export enum AlarmState {
   emergency = "emergency",
 }
 
-/** AlarmMethod values
- * @enum
- */
+/** AlarmMethod values */
 export enum AlarmMethod {
   visual = "visual",
   sound = "sound",
 }
 
-/** AlarmType values
- * @enum
- */
+/** AlarmType values */
 export enum AlarmType {
   mob = "notifications.mob",
   fire = "notifications.fire",

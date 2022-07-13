@@ -47,11 +47,27 @@ export enum APPDATA_CONTEXT {
 
 /** Signal K Client class */
 export class SignalKClient {
+  /** Signal K server hostname / ip address.
+   * @private 
+   */
   private hostname = "localhost";
+  /** Port to connect on.
+   * @private 
+   */
   private port = 3000;
+  /** Protocol to use http / https.
+   * @private 
+   */
   private protocol = "";
 
-  private _version = "v1"; // ** default Signal K api version
+  /** Signal K API version to use
+   * @private 
+   */
+  private _version = "v1";
+
+  /** Authentication token value
+   * @private 
+   */
   private _token = ""; // token for when security is enabled on the server
 
   /** endpoints to fallback to if hello response is not received.
@@ -68,9 +84,7 @@ export class SignalKClient {
     server: { id: "fallback", version: "1.43.0" },
   };
 
-  /** server information block
-   * @property {Server_Info}
-   */
+  /** Server information block */
   public server: Server_Info = {
     endpoints: {},
     info: {
@@ -80,25 +94,21 @@ export class SignalKClient {
     apiVersions: [],
   };
 
-  /** endpoints fallback to host address when no hello response
-   * @property {boolean}
-   */
+  /** Endpoints fallback to host address when no hello response */
   public fallback = false;
 
-  /** endpoints are set to host address regardless of contents of hello response
-   * @property {boolean}
-   */
+  /** endpoints are set to host address regardless of contents of hello response */
   public proxied = false;
 
   /** get preferred Signal K API version to use
-   * @returns {number} Major version number of API. e.g. 1
+   * @property
    */
   get version(): number {
     return parseInt(this._version.slice(1));
   }
 
   /** set preferred Signal K API version to use
-   * @param {number} val Major version number of API. e.g. 1
+   * @param val Major version number of API. e.g. 1
    */
   set version(val: number) {
     const v: string = "v" + val;
@@ -115,31 +125,35 @@ export class SignalKClient {
     this.stream.version = parseInt(v.slice(1));
   }
   /** set auth token value
-   * @param {string} val Token value
+   * @param val Token value
    */
   set authToken(val: string) {
     this._token = val;
     this.api.authToken = val;
     this.stream.authToken = val;
   }
+
   /** Get a Message object */
   get message(): Message {
     return Message;
   }
 
-  /** generate and return a v4 UUID */
+  /** Generate and return a v4 UUID */
   get uuid(): string {
     return crypto.randomUUID(); //new UUID();
   }
 
-  /** generate and return a Signal K UUID */
+  /** Generate and return a Signal K UUID */
   get signalkUuid(): string {
     return `urn:mrn:signalk:uuid:${crypto.randomUUID()}`;
   }
 
-  apps: SignalKApps;
-  api: SignalKHttp;
-  stream: SignalKStream;
+  /** Signal K Apps API */
+  public apps: SignalKApps;
+   /** Signal K HTTP API */
+  public api: SignalKHttp;
+   /** Signal K stream API */
+  public stream: SignalKStream;
 
   /** Create new Signal K Client */
   constructor() {
@@ -149,10 +163,10 @@ export class SignalKClient {
     this.init();
   }
 
-  /** initialise client protocol, hostname and port values.
-   * @param {string} hostname Signal K server hostname / IP address
-   * @param {number} port Port on which Signal K server is listening
-   * @param {boolean} useSSL If true uses https / wss, if false uses http /ws
+  /** Initialise client protocol, hostname and port values.
+   * @param hostname Signal K server hostname / IP address
+   * @param port Port on which Signal K server is listening
+   * @param useSSL If true uses https / wss, if false uses http /ws
    */
   private init(
     hostname: string = this.hostname,
@@ -180,9 +194,9 @@ export class SignalKClient {
   // **************** CONNECTION AND DISCOVERY  ********************
 
   /** Signal K server endpoint discovery request (/signalk).
-   * @param {string} hostname Signal K server hostname / IP address
-   * @param {number} port Port on which Signal K server is listening
-   * @param {boolean} useSSL If true uses https / wss, if false uses http /ws
+   * @param hostname Signal K server hostname / IP address
+   * @param port Port on which Signal K server is listening
+   * @param useSSL If true uses https / wss, if false uses http /ws
    */
   hello(
     hostname: string = this.hostname,
@@ -194,9 +208,9 @@ export class SignalKClient {
   }
 
   /** connect to server (endpoint discovery) and DO NOT open Stream
-   * @param {string} hostname Signal K server hostname / IP address
-   * @param {number} port Port on which Signal K server is listening
-   * @param {boolean} useSSL If true uses https / wss, if false uses http /ws
+   * @param hostname Signal K server hostname / IP address
+   * @param port Port on which Signal K server is listening
+   * @param {useSSL If true uses https / wss, if false uses http /ws
    */
   async connect(
     hostname: string = this.hostname,
@@ -238,10 +252,10 @@ export class SignalKClient {
   }
 
   /** Connect + open Delta Stream (endpoint discovery)
-   * @param {string} hostname Signal K server hostname / IP address
-   * @param {number} port Port on which Signal K server is listening
-   * @param {boolean} useSSL If true uses https / wss, if false uses http /ws
-   * @param {string} subscribe Subscription parameters for stream connection
+   * @param hostname Signal K server hostname / IP address
+   * @param port Port on which Signal K server is listening
+   * @param useSSL If true uses https / wss, if false uses http /ws
+   * @param subscribe Subscription parameters for stream connection
    */
   connectStream(
     hostname: string = this.hostname,
@@ -268,10 +282,10 @@ export class SignalKClient {
   }
 
   /** connect to playback stream (endpoint discovery)
-   * @param {string} hostname Signal K server hostname / IP address
-   * @param {number} port Port on which Signal K server is listening
-   * @param {boolean} useSSL If true uses https / wss, if false uses http /ws
-   * @param {PlaybackOptions} options Options for playback stream connection
+   * @param hostname Signal K server hostname / IP address
+   * @param port Port on which Signal K server is listening
+   * @param useSSL If true uses https / wss, if false uses http /ws
+   * @param options Options for playback stream connection
    */
   connectPlayback(
     hostname: string = this.hostname,
@@ -293,9 +307,9 @@ export class SignalKClient {
   }
 
   /** connect to delta stream with (NO endpoint discovery)
-   * @param {string} url Signal K stream endpoint url
-   * @param {string} subscribe Subscription parameters for stream connection
-   * @param {string} token Authentication token
+   * @param url Signal K stream endpoint url
+   * @param subscribe Subscription parameters for stream connection
+   * @param token Authentication token
    */
   openStream(
     url: string = this.hostname,
@@ -315,9 +329,9 @@ export class SignalKClient {
   }
 
   /** connect to playback stream (NO endpoint discovery)
-   * @param {string} url Signal K stream endpoint url
-   * @param {PlaybackOptions} options Options for playback stream connection
-   * @param {string} token Authentication token
+   * @param url Signal K stream endpoint url
+   * @param options Options for playback stream connection
+   * @param token Authentication token
    */
   openPlayback(
     url: string = this.hostname,
@@ -349,7 +363,7 @@ export class SignalKClient {
   }
 
   /** process Hello response
-   * @private
+   * @params Recieved hello response from server.
    */
   private processHello(response?: HelloResponse) {
     if (this.proxied) {
@@ -370,14 +384,12 @@ export class SignalKClient {
     this.apps.endpoint = this.resolveAppsEndpoint();
   }
 
-  /** return signalk apps API url
-   * @private
-   */
+  /** Return signalk apps API url */
   private resolveAppsEndpoint(): string {
     return this.resolveHttpEndpoint().replace("api", "apps");
   }
 
-  /** return preferred WS stream url */
+  /** Return preferred WS stream url */
   public resolveStreamEndpoint(): string {
     if (
       this.server.endpoints[this._version] &&
@@ -396,9 +408,7 @@ export class SignalKClient {
     }
   }
 
-  /** return signalk-http endpoint url
-   * @private
-   */
+  /** Return signalk-http endpoint url */
   private resolveHttpEndpoint(): string {
     let url = "";
     if (this.server.endpoints[this._version]) {
@@ -417,9 +427,7 @@ export class SignalKClient {
     return url;
   }
 
-  /** cleanup on server disconnection
-   * @private
-   */
+  /** Cleanup after server disconnection. */
   private disconnectedFromServer() {
     this.server.endpoints = {};
     this.server.info = {
@@ -429,9 +437,8 @@ export class SignalKClient {
     this.server.apiVersions = [];
   }
 
-  /** HTTP GET from API path
-   * @param {string} path Signal K path.
-   * @returns {Promise<{[key: string]: unknown}>} JSON object
+  /** HTTP GET from API path.
+   * @param path Signal K path.
    */
   async get(path: string): Promise<{ [key: string]: unknown }> {
     if (path && path.length > 0 && path[0] == "/") {
@@ -452,9 +459,8 @@ export class SignalKClient {
   }
 
   /** HTTP PUT to API path
-   * @param {string} path Signal K path.
-   * @param value Value to set
-   * @returns {Promise<Response>}
+   * @param path Signal K path.
+   * @param value Value to apply.
    */
   async put(path: string, value: unknown): Promise<Response> {
     const url = `${this.protocol}://${this.hostname}:${this.port}/${
@@ -475,10 +481,9 @@ export class SignalKClient {
     return await fetch(url, options);
   }
 
-  /** HTTP POST to API path
+  /** HTTP POST to API path.
    * @param {string} path Signal K path.
-   * @param value Value to set
-   * @returns {Promise<Response>}
+   * @param value Value to apply.
    */
   async post(path: string, value: unknown): Promise<Response> {
     if (path && path.length > 0 && path[0] == "/") {
@@ -502,7 +507,10 @@ export class SignalKClient {
     return await fetch(url, options);
   }
 
-  /** get auth token for supplied user details */
+  /** Login and retrieve an  auth token for supplied user details 
+   * @param username User id
+   * @param password User password
+  */
   async login(
     username: string,
     password: string,
@@ -545,7 +553,7 @@ export class SignalKClient {
     return result;
   }
 
-  /** validate / refresh token from server */
+  /** Validate / refresh token from server */
   async validate(): Promise<{ ok: boolean; status: number; token: string }> {
     const url =
       `${this.protocol}://${this.hostname}:${this.port}/signalk/${this._version}/auth/validate`;
@@ -582,7 +590,7 @@ export class SignalKClient {
     return result;
   }
 
-  /** logout from server */
+  /** Logout from server */
   logout(): Promise<boolean> {
     const url =
       `${this.protocol}://${this.hostname}:${this.port}/signalk/${this._version}/auth/logout`;
@@ -608,14 +616,14 @@ export class SignalKClient {
   }
 
   /** Tests if a user authenticated to the server
-   * @returns {boolean} true if user is logged in.
+   * @returns True if user is logged in.
    */
   async isLoggedIn(): Promise<boolean> {
     const response = await this.getLoginStatus();
     return response.status === "loggedIn" ? true : false;
   }
 
-  /** fetch Signal K login status from server */
+  /** Fetch Signal K login status from server */
   getLoginStatus(): Promise<{ [key: string]: unknown }> {
     let url = `/skServer/loginStatus`;
     if (this.server && this.server.info.id === "signalk-server-node") {
@@ -627,7 +635,10 @@ export class SignalKClient {
     return this.get(url);
   }
 
-  /** get data via the snapshot http api path for supplied time */
+  /** Get data via the snapshot http api path for supplied time.
+   * @param Signal K context
+   * @param time As ISO formatted time string.
+  */
   snapshot(context: string, time: string): Promise<{ [key: string]: unknown }> {
     if (!time) {
       throw new Error("Error: No time value supplied!");
@@ -651,9 +662,18 @@ export class SignalKClient {
    * context: 'user' or 'global'
    * appId: application id string
    *******************************/
+
+  /** Target application id.
+   * @private
+   */
   private _appId = "";
+
+  /** Target application version.
+   * @private
+   */
   private _appVersion = "";
 
+  /** Return endpoint for target app. */
   private resolveAppDataEndpoint(
     context: APPDATA_CONTEXT,
     appId: string,
@@ -665,17 +685,24 @@ export class SignalKClient {
     return `${url}${context}/${appId}/`;
   }
 
-  /** Set the appId */
+  /** Set the appId.
+   * @param value Application id.
+  */
   setAppId(value: string) {
     this._appId = value;
   }
 
-  /** Set the app version */
+  /** Set the app version.
+   * @param value Application version.
+  */
   setAppVersion(value: string) {
     this._appVersion = value;
   }
 
-  /** get list of available versions of app data stored */
+  /** Get list of available versions of app data stored 
+   * @param context Signal K context
+   * @param appId Application id.
+  */
   appDataVersions(
     context: APPDATA_CONTEXT = APPDATA_CONTEXT.USER,
     appId: string = this._appId,
@@ -684,7 +711,12 @@ export class SignalKClient {
     return this.get(url);
   }
 
-  /** get list of available keys for a stored path */
+  /** Get list of available keys for a stored path
+   * @param path Path to app data
+   * @param context Signal K context
+   * @param appId Application id
+   * @param version Version of data
+  */
   appDataKeys(
     path = "",
     context: APPDATA_CONTEXT = APPDATA_CONTEXT.USER,
@@ -697,7 +729,12 @@ export class SignalKClient {
     return this.get(url);
   }
 
-  /** get stored value at provided path */
+  /** Get stored value at provided path 
+   * @param path Path to app data
+   * @param context Signal K context
+   * @param appId Application id
+   * @param version Version of data
+  */
   appDataGet(
     path = "",
     context: APPDATA_CONTEXT = APPDATA_CONTEXT.USER,
@@ -710,7 +747,12 @@ export class SignalKClient {
     return this.get(url);
   }
 
-  /** set stored value at provided path */
+  /** Set stored value at provided path 
+   * @param path Path to app data
+   * @param context Signal K context
+   * @param appId Application id
+   * @param version Version of data
+  */
   appDataSet(
     path: string,
     value: { [key: string]: unknown },
@@ -734,7 +776,12 @@ export class SignalKClient {
     );
   }
 
-  /** update / patch stored values using Array of JSON patch objects */
+  /** update / patch stored values using Array of JSON patch objects 
+   * @param path Path to app data
+   * @param context Signal K context
+   * @param appId Application id
+   * @param version Version of data
+  */
   appDataPatch(
     value: Array<JSON_Patch>,
     context: APPDATA_CONTEXT = APPDATA_CONTEXT.USER,

@@ -1,11 +1,10 @@
-/** Signal K server Apps
- * ************************************/
-
+/** Signal K server Apps API */
 export class SignalKApps {
-  // ** apps api endpoint path
+
+  /** apps API endpoint. */
   public endpoint = "";
 
-  // ** return List of installed apps
+  /** Return List of installed apps. */
   async list() {
     const ep = this.endpoint.indexOf("webapps") == -1
       ? `${this.endpoint}list`
