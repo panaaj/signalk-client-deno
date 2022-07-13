@@ -18,6 +18,6 @@ export function setDev(val?: boolean) {
 /** Print debug messages to console (if development mode) */
 export function debug(...args: any[]) {
   if (_isDev) {
-    console.log(`** debug: `, ...args);
+    console.log(`%cSignalKClient: `, "color: yellow", ...args);
   }
 }
