@@ -239,7 +239,8 @@ _Follow the links for the relevant documentation._
 - `openStream()`
 - `openPlayback()`
 - `snapshot()`
-- `resovleStreamEndpoint()`
+- `accessRequest()`
+- `checkAccessRequest()`
 - `get()`
 - `put()`
 - `post()`
@@ -726,16 +727,6 @@ const result = signalk.openStream( 'playback_url', {
 
 ---
 
-`resolveStreamEndpoint()`
-
-Returns preferred STREAM API url based on:
-
-1. Discovered stream endpoint urls
-
-2. Preferred API version set with `version` attribute.
-
----
-
 `get(path)`
 
 Make a HTTP request to a path relative to Signal K server root path.
@@ -840,6 +831,63 @@ signalk.connect(...);
 const response = await signalk.snapshot(
     'self',
     new Date().toISOString()
+);
+```
+
+---
+
+`accessRequest(name, id?): Promise`
+
+**Access Request**
+
+Request access from the Signal K server.
+
+_Parameters:_
+
+- _name_: name assigned to sensor / process _e.g. 'mySensor'_
+
+- _id (optional)_: uuid of the request. If not supplied one will be generated
+
+_Returns_: Promise containing `status` and `href` which is the path to check the
+staus of the request.
+
+_Example:_
+
+```javascript
+// ** connect to server **
+signalk.connect(...);
+
+...
+const response = await signalk.accessRequest(
+    'mysensor',
+    '3c789f47-e15c-4e54-8020-85fc5b7cf2a6'
+);
+```
+
+---
+
+`checkAccessRequest(href): Promise`
+
+**Check status of Access Request**
+
+Request access from the Signal K server.
+
+_Parameters:_
+
+- _href_: Value provided in `accessRequest` response.
+
+_Returns_: Promise containing the current status of the request. If APPROVED
+will contain the token to be included with subsequest requests to the server.
+
+_Example:_
+
+```javascript
+// ** connect to server **
+signalk.connect(...);
+
+...
+const response = await signalk.checkAccessRequest(
+    '/signalk/v1/requests/42ed97b5-6acd-4848-8d25-99da710f1d91'
 );
 ```
 

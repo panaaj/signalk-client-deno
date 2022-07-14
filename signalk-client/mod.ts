@@ -2,11 +2,11 @@
  * Signal K Client
  *****************************/
 
-export * from './signalk-client.ts';
-export * from './utils.ts';
-export * from './stream-api.ts';
-export * from './http-api.ts';
-export * from './apps-api.ts';
+export * from "./signalk-client.ts";
+export * from "./utils.ts";
+export * from "./stream-api.ts";
+export * from "./http-api.ts";
+export * from "./apps-api.ts";
 
 let _isDev = false;
 

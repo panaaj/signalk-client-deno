@@ -1,4 +1,3 @@
-
 /** Signal K stream subscripton. */
 export interface Subscription {
   path: string;
@@ -34,7 +33,6 @@ export class Path {
 
 /** Class with methods to return skeleton Signal K request payloads */
 export class Message {
-
   /** returns UPDATES message object */
   static updates(): {
     context: string | null;

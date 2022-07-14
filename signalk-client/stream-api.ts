@@ -8,21 +8,28 @@ export class SignalKStream {
    * @private */
   private ws: WebSocket | undefined;
   /** id of vessel to filter delta messages
-   * @private 
+   * @private
    */
-  private _filter = ""; // ** 
+  private _filter = "";
+
   /** websocket connection timeout
-   * @private 
+   * @private
    */
   private _wsTimeout = 20000;
+
   /** Authentication token
-   * @private 
+   * @private
    */
   private _token = "";
+
   /** Playback mode flag
    * @private */
   private _playbackMode = false;
-  
+
+  /** source value to use in messages
+   * @private
+   */
+  private _source: any = null;
 
   // **************** ATTRIBUTES ***************************
 
@@ -32,15 +39,13 @@ export class SignalKStream {
   public endpoint = "";
   /** self identifier value */
   public selfId = "";
-  /** source value to use in messages */
-  public _source: any = null;
 
   /** Set source label for use in messages */
   set source(val: string) {
     if (!this._source) {
       this._source = {};
     }
-    this._source["label"] = val;
+    this._source = val;
   }
 
   /** Set auth token value */
@@ -105,17 +110,17 @@ export class SignalKStream {
     }
   }
 
-  /** Open a WebSocket at provided url 
+  /** Open a WebSocket at provided url
    * @param url Stream endpoint
    * @param subscribe Stream subscription params
    * @param token Authentication token
-  */
+   */
   open(url: string, subscribe?: string, token?: string) {
     url = url ? url : this.endpoint;
     if (!url) {
       return;
     }
-    let q = url.indexOf("?") == -1 ? "?" : "&";
+    let q = url.indexOf("?") === -1 ? "?" : "&";
     if (subscribe) {
       url += `${q}subscribe=${subscribe}`;
     }
@@ -180,7 +185,7 @@ export class SignalKStream {
       //this._message.next(data);
       this.events.emit("message", data);
     } else if (this._filter && this.isDelta(data)) {
-      if (data.context == this._filter) {
+      if (data.context === this._filter) {
         //this._message.next(data);
         this.events.emit("message", data);
       }
@@ -190,9 +195,9 @@ export class SignalKStream {
     }
   }
 
-  /** Send request via stream 
+  /** Send request via stream
    * @param value Stream message payload
-  */
+   */
   sendRequest(value: any): string {
     if (typeof value !== "object") {
       return "";
@@ -212,23 +217,23 @@ export class SignalKStream {
     return msg.requestId;
   }
 
-  /** Send PUT request via stream 
+  /** Send PUT request via stream
    * @param context Signal K context
    * @param path Signal K path value
    * @param value Value to apply to supplied path
-  */
+   */
   put(context: string, path: string, value: any): string {
     const msg = {
-      context: context == "self" ? "vessels.self" : context,
+      context: context === "self" ? "vessels.self" : context,
       put: { path: path, value: value },
     };
     return this.sendRequest(msg);
   }
 
-  /** Login with supplied user details 
+  /** Login with supplied user details
    * @param username User account id
    * @param password User password
-  */
+   */
   login(username: string, password: string) {
     const msg = {
       login: { username: username, password: password },
@@ -236,26 +241,28 @@ export class SignalKStream {
     return this.sendRequest(msg);
   }
 
-  /** Send data via Signal K stream 
+  /** Send data via Signal K stream
    * @param data Signal K stream message
-  */
+   */
   send(data: any) {
     if (this.ws) {
       if (typeof data === "object") {
         data = JSON.stringify(data);
       }
+      debug(`sending -> `, data);
       this.ws.send(data);
     }
   }
 
-  /** Send value(s) via delta stream update 
+  /** Send value(s) via delta stream update
    * @param context Signal K context
    * @param {Array} path Array of {path: , value: } objects
-  *//** Send value(s) via delta stream update 
+   */
+  /** Send value(s) via delta stream update
    * @param context Signal K context
    * @param {String} path Signal K path value
    * @param {String} value Value to apply to supplied path
-  */
+   */
   sendUpdate(context: string, path: Array<any>): void;
   sendUpdate(context: string, path: string, value: any): void;
   sendUpdate(
@@ -267,7 +274,7 @@ export class SignalKStream {
     if (this._token) {
       val["token"] = this._token;
     }
-    val.context = context == "self" ? "vessels.self" : context;
+    val.context = context === "self" ? "vessels.self" : context;
     if (this._token) {
       val["token"] = this._token;
     }
@@ -284,21 +291,21 @@ export class SignalKStream {
       values: uValues,
     };
     if (this._source) {
-      u["source"] = this._source;
+      u["$source"] = this._source;
     }
     val.updates.push(u);
     this.send(val);
   }
 
-
   /** Subscribe to Delta stream messages
    * @param context Signal K context
    * @param {Array} path Array of {path: , value: } objects
-  *//** Subscribe to Delta stream messages
+   */
+  /** Subscribe to Delta stream messages
    * @param context Signal K context
    * @param {String} path Signal K path value
    * @param options Subscription options
-  */
+   */
   subscribe(context: string, path: Array<any>): void;
   subscribe(context: string, path: string, options?: any): void;
   subscribe(
@@ -310,7 +317,7 @@ export class SignalKStream {
     if (this._token) {
       val["token"] = this._token;
     }
-    val.context = context == "self" ? "vessels.self" : context;
+    val.context = context === "self" ? "vessels.self" : context;
     if (this._token) {
       val["token"] = this._token;
     }
@@ -330,15 +337,15 @@ export class SignalKStream {
         }
         if (
           options["format"] &&
-          (options["format"] == "delta" || options["format"] == "full")
+          (options["format"] === "delta" || options["format"] === "full")
         ) {
           sValue["format"] = options["format"];
         }
         if (
           options["policy"] &&
-          (options["policy"] == "instant" ||
-            options["policy"] == "ideal" ||
-            options["policy"] == "fixed")
+          (options["policy"] === "instant" ||
+            options["policy"] === "ideal" ||
+            options["policy"] === "fixed")
         ) {
           sValue["policy"] = options["policy"];
         }
@@ -348,16 +355,16 @@ export class SignalKStream {
     this.send(val);
   }
 
-  /** Unsubscribe from Delta stream messages 
+  /** Unsubscribe from Delta stream messages
    * @param context Signal K context
    * @param path Signal K path value
-  */
+   */
   unsubscribe(context = "*", path = "*") {
     const val: any = Message.unsubscribe();
     if (this._token) {
       val["token"] = this._token;
     }
-    val.context = context == "self" ? "vessels.self" : context;
+    val.context = context === "self" ? "vessels.self" : context;
     if (this._token) {
       val["token"] = this._token;
     }
@@ -375,17 +382,18 @@ export class SignalKStream {
    * @param context Signal K context
    * @param name Alarm name
    * @param alarm  Alarm object
-  *//** Raise alarm
+   */
+  /** Raise alarm
    * @param context Signal K context
    * @param type Alarm type
    * @param alarm  Alarm object
-  */
+   */
   raiseAlarm(context: string, name: string, alarm: Alarm): void;
   raiseAlarm(context: string, type: AlarmType, alarm: Alarm): void;
   raiseAlarm(context = "*", alarmId: string | AlarmType, alarm: Alarm) {
     let path: string;
     if (typeof alarmId === "string") {
-      path = alarmId.indexOf("notifications.") == -1
+      path = alarmId.indexOf("notifications.") === -1
         ? `notifications.${alarmId}`
         : alarmId;
     } else {
@@ -394,42 +402,42 @@ export class SignalKStream {
     this.put(context, path, alarm.value);
   }
 
-  /** Clear alarm 
+  /** Clear alarm
    * @param context Signal K context
    * @param name alarm name
-  */
+   */
   clearAlarm(context = "*", name: string) {
-    const path = name.indexOf("notifications.") == -1
+    const path = name.indexOf("notifications.") === -1
       ? `notifications.${name}`
       : name;
     this.put(context, path, null);
   }
 
   // *************** MESSAGE PARSING ******************************
-  /** Tests if message context is 'self' 
+  /** Tests if message context is 'self'
    * @param msg Received stream message
-  */
+   */
   isSelf(msg: any): boolean {
-    return msg.context == this.selfId;
+    return msg.context === this.selfId;
   }
 
-  /** Tests if message is a Delta message 
+  /** Tests if message is a Delta message
    * @param msg Received stream message
-  */
+   */
   isDelta(msg: any): boolean {
     return typeof msg.context != "undefined";
   }
 
-  /** Tests if message is a Hello message 
+  /** Tests if message is a Hello message
    * @param msg Received stream message
-  */
+   */
   isHello(msg: any): boolean {
     return typeof msg.version != "undefined" && typeof msg.self != "undefined";
   }
 
-  /** Tests if message is a request Response message 
+  /** Tests if message is a request Response message
    * @param msg Received stream message
-  */
+   */
   isResponse(msg: any): boolean {
     return typeof msg.requestId != "undefined";
   }

@@ -48,25 +48,25 @@ export enum APPDATA_CONTEXT {
 /** Signal K Client class */
 export class SignalKClient {
   /** Signal K server hostname / ip address.
-   * @private 
+   * @private
    */
   private hostname = "localhost";
   /** Port to connect on.
-   * @private 
+   * @private
    */
   private port = 3000;
   /** Protocol to use http / https.
-   * @private 
+   * @private
    */
   private protocol = "";
 
   /** Signal K API version to use
-   * @private 
+   * @private
    */
   private _version = "v1";
 
   /** Authentication token value
-   * @private 
+   * @private
    */
   private _token = ""; // token for when security is enabled on the server
 
@@ -150,9 +150,9 @@ export class SignalKClient {
 
   /** Signal K Apps API */
   public apps: SignalKApps;
-   /** Signal K HTTP API */
+  /** Signal K HTTP API */
   public api: SignalKHttp;
-   /** Signal K stream API */
+  /** Signal K stream API */
   public stream: SignalKStream;
 
   /** Create new Signal K Client */
@@ -390,7 +390,7 @@ export class SignalKClient {
   }
 
   /** Return preferred WS stream url */
-  public resolveStreamEndpoint(): string {
+  private resolveStreamEndpoint(): string {
     if (
       this.server.endpoints[this._version] &&
       this.server.endpoints[this._version]["signalk-ws"]
@@ -441,7 +441,7 @@ export class SignalKClient {
    * @param path Signal K path.
    */
   async get(path: string): Promise<{ [key: string]: unknown }> {
-    if (path && path.length > 0 && path[0] == "/") {
+    if (path && path.length > 0 && path[0] === "/") {
       path = path.slice(1);
     }
     const url = `${this.protocol}://${this.hostname}:${this.port}/${
@@ -486,7 +486,7 @@ export class SignalKClient {
    * @param value Value to apply.
    */
   async post(path: string, value: unknown): Promise<Response> {
-    if (path && path.length > 0 && path[0] == "/") {
+    if (path && path.length > 0 && path[0] === "/") {
       path = path.slice(1);
     }
     const url = `${this.protocol}://${this.hostname}:${this.port}/${
@@ -507,10 +507,10 @@ export class SignalKClient {
     return await fetch(url, options);
   }
 
-  /** Login and retrieve an  auth token for supplied user details 
+  /** Login and retrieve an  auth token for supplied user details
    * @param username User id
    * @param password User password
-  */
+   */
   async login(
     username: string,
     password: string,
@@ -638,7 +638,7 @@ export class SignalKClient {
   /** Get data via the snapshot http api path for supplied time.
    * @param Signal K context
    * @param time As ISO formatted time string.
-  */
+   */
   snapshot(context: string, time: string): Promise<{ [key: string]: unknown }> {
     if (!time) {
       throw new Error("Error: No time value supplied!");
@@ -655,6 +655,49 @@ export class SignalKClient {
     }?time=${time}`;
 
     return this.get(url);
+  }
+
+  /*******************************
+   *  Access Requests
+   *******************************/
+  public clientId: string | undefined;
+
+  /** Access request methods
+   * @param name Name of sensor / process requesting access
+   * @param id Client  id
+   */
+  async accessRequest(
+    name: string,
+    id?: string,
+  ): Promise<{ [key: string]: unknown }> {
+    if (!name) {
+      throw new Error("Error: Name not supplied!");
+    }
+
+    if (!id && !this.clientId) {
+      this.clientId = this.uuid;
+    } else if (!this.clientId) {
+      this.clientId = id;
+    }
+
+    const response = await this.post(
+      `/signalk/${this._version}/access/requests`,
+      {
+        clientId: this.clientId,
+        description: name,
+      },
+    );
+    return response.json();
+  }
+
+  /** Check status of an access request.
+   * @param href url path returned in the access request PENDING response.
+   */
+  async checkAccessRequest(href: string): Promise<{ [key: string]: unknown }> {
+    if (!href) {
+      throw new Error("Error: href not supplied!");
+    }
+    return await this.get(href);
   }
 
   /*******************************
@@ -687,22 +730,22 @@ export class SignalKClient {
 
   /** Set the appId.
    * @param value Application id.
-  */
+   */
   setAppId(value: string) {
     this._appId = value;
   }
 
   /** Set the app version.
    * @param value Application version.
-  */
+   */
   setAppVersion(value: string) {
     this._appVersion = value;
   }
 
-  /** Get list of available versions of app data stored 
+  /** Get list of available versions of app data stored
    * @param context Signal K context
    * @param appId Application id.
-  */
+   */
   appDataVersions(
     context: APPDATA_CONTEXT = APPDATA_CONTEXT.USER,
     appId: string = this._appId,
@@ -716,7 +759,7 @@ export class SignalKClient {
    * @param context Signal K context
    * @param appId Application id
    * @param version Version of data
-  */
+   */
   appDataKeys(
     path = "",
     context: APPDATA_CONTEXT = APPDATA_CONTEXT.USER,
@@ -729,12 +772,12 @@ export class SignalKClient {
     return this.get(url);
   }
 
-  /** Get stored value at provided path 
+  /** Get stored value at provided path
    * @param path Path to app data
    * @param context Signal K context
    * @param appId Application id
    * @param version Version of data
-  */
+   */
   appDataGet(
     path = "",
     context: APPDATA_CONTEXT = APPDATA_CONTEXT.USER,
@@ -747,12 +790,12 @@ export class SignalKClient {
     return this.get(url);
   }
 
-  /** Set stored value at provided path 
+  /** Set stored value at provided path
    * @param path Path to app data
    * @param context Signal K context
    * @param appId Application id
    * @param version Version of data
-  */
+   */
   appDataSet(
     path: string,
     value: { [key: string]: unknown },
@@ -776,12 +819,12 @@ export class SignalKClient {
     );
   }
 
-  /** update / patch stored values using Array of JSON patch objects 
+  /** update / patch stored values using Array of JSON patch objects
    * @param path Path to app data
    * @param context Signal K context
    * @param appId Application id
    * @param version Version of data
-  */
+   */
   appDataPatch(
     value: Array<JSON_Patch>,
     context: APPDATA_CONTEXT = APPDATA_CONTEXT.USER,

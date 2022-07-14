@@ -150,7 +150,7 @@ signalk.stream.sendUpdate(....);
     context: 'vessels.self',
     updates: [
         {
-            source: {label: 'my-app-name'},
+            $source: 'my-app-name',
             timestamp: .....,
             values: [... ]
         }
