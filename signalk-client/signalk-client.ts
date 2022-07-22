@@ -595,14 +595,14 @@ export class SignalKClient {
     const url =
       `${this.protocol}://${this.hostname}:${this.port}/signalk/${this._version}/auth/logout`;
 
-    debug(`post ${url}`);
+    debug(`put ${url}`);
     const headers = new Headers({ "Content-Type": "application/json" });
     if (this._token) {
       headers.append("Authorization", `JWT ${this._token}`);
     }
 
     const options = {
-      method: "POST",
+      method: "PUT",
       headers: headers,
       body: null,
     };
@@ -664,7 +664,7 @@ export class SignalKClient {
 
   /** Access request methods
    * @param name Name of sensor / process requesting access
-   * @param id Client  id
+   * @param id Client id
    */
   async accessRequest(
     name: string,
@@ -679,6 +679,7 @@ export class SignalKClient {
     } else if (!this.clientId) {
       this.clientId = id;
     }
+    this.stream.clientId = this.clientId;
 
     const response = await this.post(
       `/signalk/${this._version}/access/requests`,
