@@ -31,6 +31,11 @@ export class SignalKStream {
    */
   private _source: any = null;
 
+  /** Client Id for approved device
+   * @private
+   */
+  private _clientId: any = "";
+
   // **************** ATTRIBUTES ***************************
 
   /** API version to use */
@@ -40,18 +45,30 @@ export class SignalKStream {
   /** self identifier value */
   public selfId = "";
 
-  /** Set source label for use in messages */
+  /** Set source label for use in messages 
+   * @param val label value
+  */
   set source(val: string) {
     if (!this._source) {
       this._source = {};
     }
-    this._source = val;
+    this._source['label'] = val;
   }
 
-  /** Set auth token value */
+  /** Set auth token value 
+   * @param val token value
+  */
   set authToken(val: string) {
     this._token = val;
   }
+
+  /** set clientId value
+   * @param val client id value
+   */
+  set clientId(val: string | undefined) {
+    this._clientId = val;
+  }
+
   /** Get websocket connection timeout 3000<=timeout<=60000 */
   get connectionTimeout(): number {
     return this._wsTimeout;
@@ -143,15 +160,12 @@ export class SignalKStream {
     }, this._wsTimeout);
 
     this.ws.onopen = (e: Event) => {
-      //this._connect.next(e);
       this.events.emit("connect", e);
     };
     this.ws.onclose = (e: Event) => {
-      //this._close.next(e);
       this.events.emit("close", e);
     };
     this.ws.onerror = (e: Event) => {
-      //this._error.next(e);
       this.events.emit("error", e);
     };
     this.ws.onmessage = (e: MessageEvent) => {
@@ -174,7 +188,6 @@ export class SignalKStream {
     if (this.isHello(data)) {
       this.selfId = data.self;
       this._playbackMode = typeof data.startTime != "undefined" ? true : false;
-      //this._message.next(data);
       this.events.emit("message", data);
     } else if (this.isResponse(data)) {
       if (typeof data.login !== "undefined") {
@@ -182,21 +195,19 @@ export class SignalKStream {
           this._token = data.login.token;
         }
       }
-      //this._message.next(data);
       this.events.emit("message", data);
     } else if (this._filter && this.isDelta(data)) {
       if (data.context === this._filter) {
-        //this._message.next(data);
         this.events.emit("message", data);
       }
     } else {
-      //this._message.next(data);
       this.events.emit("message", data);
     }
   }
 
   /** Send request via stream
    * @param value Stream message payload
+   * @returns String containing requestId
    */
   sendRequest(value: any): string {
     if (typeof value !== "object") {
@@ -207,6 +218,10 @@ export class SignalKStream {
     debug("_token: ", this._token);
     if (typeof value.login === "undefined" && this._token) {
       msg["token"] = this._token;
+    }
+    debug("_clientId: ", this._clientId);
+    if (this._clientId) {
+      msg["clientId"] = this._clientId;
     }
     const keys = Object.keys(value);
     keys.forEach((k) => {
@@ -221,6 +236,7 @@ export class SignalKStream {
    * @param context Signal K context
    * @param path Signal K path value
    * @param value Value to apply to supplied path
+   * @returns String containing requestId
    */
   put(context: string, path: string, value: any): string {
     const msg = {
@@ -233,8 +249,9 @@ export class SignalKStream {
   /** Login with supplied user details
    * @param username User account id
    * @param password User password
+   * @returns String containing requestId
    */
-  login(username: string, password: string) {
+  login(username: string, password: string): string {
     const msg = {
       login: { username: username, password: password },
     };
@@ -274,10 +291,11 @@ export class SignalKStream {
     if (this._token) {
       val["token"] = this._token;
     }
-    val.context = context === "self" ? "vessels.self" : context;
-    if (this._token) {
-      val["token"] = this._token;
+    debug("_clientId: ", this._clientId);
+    if (this._clientId) {
+      val["clientId"] = this._clientId;
     }
+    val.context = context === "self" ? "vessels.self" : context;
 
     let uValues = [];
     if (typeof path === "string") {
@@ -291,7 +309,7 @@ export class SignalKStream {
       values: uValues,
     };
     if (this._source) {
-      u["$source"] = this._source;
+      u["source"] = this._source;
     }
     val.updates.push(u);
     this.send(val);
@@ -377,6 +395,8 @@ export class SignalKStream {
     }
     this.send(val);
   }
+
+ 
 
   /** Raise alarm
    * @param context Signal K context
