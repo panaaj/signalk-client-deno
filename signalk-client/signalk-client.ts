@@ -1,8 +1,8 @@
-import { SignalKHttp } from "./http-api.ts";
-import { SignalKStream } from "./stream-api.ts";
-import { SignalKApps } from "./apps-api.ts";
-import { Message, Path } from "./utils.ts";
-import { debug } from "./mod.ts";
+import { SignalKHttp } from './http-api.ts';
+import { SignalKStream } from './stream-api.ts';
+import { SignalKApps } from './apps-api.ts';
+import { Message, Path } from './utils.ts';
+import { debug } from './mod.ts';
 
 interface Server_Info {
   endpoints: { [key: string]: EndPoint };
@@ -12,8 +12,8 @@ interface Server_Info {
 
 interface EndPoint {
   version: string;
-  "signalk-http": string;
-  "signalk-ws": string;
+  'signalk-http': string;
+  'signalk-ws': string;
 }
 
 /** Signal K Server information */
@@ -34,15 +34,15 @@ interface PlaybackOptions {
 }
 
 interface JSON_Patch {
-  op: "add" | "replace" | "remove" | "copy" | "move" | "test";
+  op: 'add' | 'replace' | 'remove' | 'copy' | 'move' | 'test';
   path: string;
   value: unknown;
 }
 
 /** Application data contexts */
 export enum APPDATA_CONTEXT {
-  USER = "user",
-  GLOBAL = "global",
+  USER = 'user',
+  GLOBAL = 'global',
 }
 
 /** Signal K Client class */
@@ -50,7 +50,7 @@ export class SignalKClient {
   /** Signal K server hostname / ip address.
    * @private
    */
-  private hostname = "localhost";
+  private hostname = 'localhost';
   /** Port to connect on.
    * @private
    */
@@ -58,17 +58,17 @@ export class SignalKClient {
   /** Protocol to use http / https.
    * @private
    */
-  private protocol = "";
+  private protocol = '';
 
   /** Signal K API version to use
    * @private
    */
-  private _version = "v1";
+  private _version = 'v1';
 
   /** Authentication token value
    * @private
    */
-  private _token = ""; // token for when security is enabled on the server
+  private _token = ''; // token for when security is enabled on the server
 
   /** endpoints to fallback to if hello response is not received.
    * @private
@@ -76,20 +76,20 @@ export class SignalKClient {
   private fallbackEndpoints: HelloResponse = {
     endpoints: {
       v1: {
-        version: "1.0.0",
-        "signalk-http": "",
-        "signalk-ws": "",
+        version: '1.0.0',
+        'signalk-http': '',
+        'signalk-ws': '',
       },
     },
-    server: { id: "fallback", version: "1.43.0" },
+    server: { id: 'fallback', version: '1.43.0' },
   };
 
   /** Server information block */
   public server: Server_Info = {
     endpoints: {},
     info: {
-      version: "",
-      id: "",
+      version: '',
+      id: '',
     },
     apiVersions: [],
   };
@@ -111,7 +111,7 @@ export class SignalKClient {
    * @param val Major version number of API. e.g. 1
    */
   set version(val: number) {
-    const v: string = "v" + val;
+    const v: string = 'v' + val;
     if (this.server.apiVersions.length === 0) {
       this._version = v;
       debug(`Signal K api version set to: ${v}`);
@@ -175,19 +175,19 @@ export class SignalKClient {
   ) {
     this.hostname = hostname ? hostname : this.hostname;
     if (useSSL) {
-      this.protocol = "https";
+      this.protocol = 'https';
       this.port = port || 443;
     } else {
-      this.protocol = "http";
+      this.protocol = 'http';
       this.port = port || 80;
     }
     const httpUrl = `${this.protocol}://${this.hostname}:${this.port}`;
-    const wsUrl = `${useSSL ? "wss" : "ws"}://${this.hostname}:${this.port}`;
+    const wsUrl = `${useSSL ? 'wss' : 'ws'}://${this.hostname}:${this.port}`;
     this.fallbackEndpoints.endpoints.v1[
-      "signalk-http"
+      'signalk-http'
     ] = `${httpUrl}/signalk/v1/api/`;
     this.fallbackEndpoints.endpoints.v1[
-      "signalk-ws"
+      'signalk-ws'
     ] = `${wsUrl}/signalk/v1/stream`;
   }
 
@@ -204,7 +204,7 @@ export class SignalKClient {
     useSSL = false,
   ): Promise<{ [key: string]: unknown }> {
     this.init(hostname, port, useSSL);
-    return this.get("/signalk");
+    return this.get('/signalk');
   }
 
   /** connect to server (endpoint discovery) and DO NOT open Stream
@@ -217,7 +217,7 @@ export class SignalKClient {
     port = 3000,
     useSSL = false,
   ): Promise<boolean> {
-    debug("Contacting Signal K server.........");
+    debug('Contacting Signal K server.........');
     try {
       const response: unknown = await this.hello(hostname, port, useSSL);
       // ** discover endpoints **
@@ -261,7 +261,7 @@ export class SignalKClient {
     hostname: string = this.hostname,
     port = 3000,
     useSSL = false,
-    subscribe = "",
+    subscribe = '',
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
       this.connect(hostname, port, useSSL)
@@ -297,7 +297,7 @@ export class SignalKClient {
       this.connect(hostname, port, useSSL)
         .then(() => {
           // ** connect to playback api at preferred version else fall back to default version
-          this.openPlayback("", options, this._token);
+          this.openPlayback('', options, this._token);
           resolve(true);
         })
         .catch((e) => {
@@ -316,12 +316,12 @@ export class SignalKClient {
     subscribe?: string,
     token?: string,
   ): boolean {
-    debug("openStream.........");
+    debug('openStream.........');
     if (!url) {
       // connect to stream api at discovered endpoint
       url = this.resolveStreamEndpoint();
       if (!url) {
-        throw new Error("Server has no advertised Stream endpoints!");
+        throw new Error('Server has no advertised Stream endpoints!');
       }
     }
     this.stream.open(url, subscribe, token);
@@ -338,24 +338,24 @@ export class SignalKClient {
     options?: PlaybackOptions,
     token?: string,
   ): boolean {
-    debug("openPlayback.........");
+    debug('openPlayback.........');
     if (!url) {
       // connect to stream api at discovered endpoint
       url = this.resolveStreamEndpoint();
       if (!url) {
-        throw new Error("Server has no advertised Stream endpoints!");
+        throw new Error('Server has no advertised Stream endpoints!');
       }
-      url = url.replace("stream", "playback");
+      url = url.replace('stream', 'playback');
     }
-    let pb = "";
-    let subscribe: string | undefined = "";
-    if (options && typeof options === "object") {
+    let pb = '';
+    let subscribe: string | undefined = '';
+    if (options && typeof options === 'object') {
       pb += options.startTime
-        ? "?startTime=" +
-          options.startTime.slice(0, options.startTime.indexOf(".")) +
-          "Z"
-        : "";
-      pb += options.playbackRate ? `&playbackRate=${options.playbackRate}` : "";
+        ? '?startTime=' +
+          options.startTime.slice(0, options.startTime.indexOf('.')) +
+          'Z'
+        : '';
+      pb += options.playbackRate ? `&playbackRate=${options.playbackRate}` : '';
       subscribe = options.subscribe ? options.subscribe : undefined;
     }
     this.stream.open(url + pb, subscribe, token);
@@ -369,12 +369,12 @@ export class SignalKClient {
     if (this.proxied) {
       this.server.endpoints = this.fallbackEndpoints.endpoints;
     } else {
-      this.server.endpoints = response && response["endpoints"]
-        ? response["endpoints"]
+      this.server.endpoints = response && response['endpoints']
+        ? response['endpoints']
         : this.fallbackEndpoints.endpoints;
     }
-    this.server.info = response && response["server"]
-      ? response["server"]
+    this.server.info = response && response['server']
+      ? response['server']
       : this.fallbackEndpoints.server;
     this.server.apiVersions = this.server.endpoints
       ? Object.keys(this.server.endpoints)
@@ -386,42 +386,42 @@ export class SignalKClient {
 
   /** Return signalk apps API url */
   private resolveAppsEndpoint(): string {
-    return this.resolveHttpEndpoint().replace("api", "apps");
+    return this.resolveHttpEndpoint().replace('api', 'apps');
   }
 
   /** Return preferred WS stream url */
   private resolveStreamEndpoint(): string {
     if (
       this.server.endpoints[this._version] &&
-      this.server.endpoints[this._version]["signalk-ws"]
+      this.server.endpoints[this._version]['signalk-ws']
     ) {
       debug(`Connecting endpoint version: ${this._version}`);
-      return `${this.server.endpoints[this._version]["signalk-ws"]}`;
+      return `${this.server.endpoints[this._version]['signalk-ws']}`;
     } else if (
-      this.server.endpoints["v1"] &&
-      this.server.endpoints["v1"]["signalk-ws"]
+      this.server.endpoints['v1'] &&
+      this.server.endpoints['v1']['signalk-ws']
     ) {
       debug(`Connection falling back to: v1`);
-      return `${this.server.endpoints["v1"]["signalk-ws"]}`;
+      return `${this.server.endpoints['v1']['signalk-ws']}`;
     } else {
-      return "";
+      return '';
     }
   }
 
   /** Return signalk-http endpoint url */
   private resolveHttpEndpoint(): string {
-    let url = "";
+    let url = '';
     if (this.server.endpoints[this._version]) {
       // ** connection made
       // ** connect to http endpoint at prescribed version else fall back to default version
-      if (this.server.endpoints[this._version]["signalk-http"]) {
-        url = `${this.server.endpoints[this._version]["signalk-http"]}`;
+      if (this.server.endpoints[this._version]['signalk-http']) {
+        url = `${this.server.endpoints[this._version]['signalk-http']}`;
       } else {
-        url = `${this.server.endpoints["v1"]["signalk-http"]}`;
+        url = `${this.server.endpoints['v1']['signalk-http']}`;
       }
     } else {
       const msg =
-        "No current connection http endpoint service! Use connect() to establish a connection.";
+        'No current connection http endpoint service! Use connect() to establish a connection.';
       debug(msg);
     }
     return url;
@@ -431,8 +431,8 @@ export class SignalKClient {
   private disconnectedFromServer() {
     this.server.endpoints = {};
     this.server.info = {
-      version: "",
-      id: "",
+      version: '',
+      id: '',
     };
     this.server.apiVersions = [];
   }
@@ -441,7 +441,7 @@ export class SignalKClient {
    * @param path Signal K path.
    */
   async get(path: string): Promise<{ [key: string]: unknown }> {
-    if (path && path.length > 0 && path[0] === "/") {
+    if (path && path.length > 0 && path[0] === '/') {
       path = path.slice(1);
     }
     const url = `${this.protocol}://${this.hostname}:${this.port}/${
@@ -468,13 +468,13 @@ export class SignalKClient {
     }`;
 
     debug(`put ${url}`);
-    const headers = new Headers({ "Content-Type": "application/json" });
+    const headers = new Headers({ 'Content-Type': 'application/json' });
     if (this._token) {
-      headers.append("Authorization", `JWT ${this._token}`);
+      headers.append('Authorization', `JWT ${this._token}`);
     }
 
     const options: RequestInit = {
-      method: "PUT",
+      method: 'PUT',
       headers: headers,
       body: JSON.stringify(value),
     };
@@ -486,7 +486,7 @@ export class SignalKClient {
    * @param value Value to apply.
    */
   async post(path: string, value: unknown): Promise<Response> {
-    if (path && path.length > 0 && path[0] === "/") {
+    if (path && path.length > 0 && path[0] === '/') {
       path = path.slice(1);
     }
     const url = `${this.protocol}://${this.hostname}:${this.port}/${
@@ -494,13 +494,13 @@ export class SignalKClient {
     }`;
 
     debug(`post ${url}`);
-    const headers = new Headers({ "Content-Type": "application/json" });
+    const headers = new Headers({ 'Content-Type': 'application/json' });
     if (this._token) {
-      headers.append("Authorization", `JWT ${this._token}`);
+      headers.append('Authorization', `JWT ${this._token}`);
     }
 
     const options: RequestInit = {
-      method: "POST",
+      method: 'POST',
       headers: headers,
       body: JSON.stringify(value),
     };
@@ -515,17 +515,17 @@ export class SignalKClient {
     username: string,
     password: string,
   ): Promise<{ ok: boolean; status: number; token: string }> {
-    const headers = new Headers({ "Content-Type": "application/json" });
+    const headers = new Headers({ 'Content-Type': 'application/json' });
     const url =
       `${this.protocol}://${this.hostname}:${this.port}/signalk/${this._version}/auth/login`;
 
     debug(`post ${url}`);
 
     if (this._token) {
-      headers.append("Authorization", `JWT ${this._token}`);
+      headers.append('Authorization', `JWT ${this._token}`);
     }
     const options = {
-      method: "POST",
+      method: 'POST',
       headers: headers,
       body: JSON.stringify({ username: username, password: password }),
     };
@@ -538,14 +538,14 @@ export class SignalKClient {
     const result = {
       ok: response.ok,
       status: response.status,
-      token: "",
+      token: '',
     };
     if (response.ok) {
-      const cookies = response.headers.get("set-cookie")?.split(";");
+      const cookies = response.headers.get('set-cookie')?.split(';');
       cookies?.forEach((c) => {
-        if (c.indexOf("JAUTHENTICATION") !== -1) {
-          this.authToken = c.split("=")[1];
-          debug("authToken: ", this._token);
+        if (c.indexOf('JAUTHENTICATION') !== -1) {
+          this.authToken = c.split('=')[1];
+          debug('authToken: ', this._token);
           result.token = this._token;
         }
       });
@@ -559,13 +559,13 @@ export class SignalKClient {
       `${this.protocol}://${this.hostname}:${this.port}/signalk/${this._version}/auth/validate`;
 
     debug(`post ${url}`);
-    const headers = new Headers({ "Content-Type": "application/json" });
+    const headers = new Headers({ 'Content-Type': 'application/json' });
     if (this._token) {
-      headers.append("Authorization", `JWT ${this._token}`);
+      headers.append('Authorization', `JWT ${this._token}`);
     }
 
     const options = {
-      method: "POST",
+      method: 'POST',
       headers: headers,
       body: null,
     };
@@ -575,14 +575,14 @@ export class SignalKClient {
     const result = {
       ok: response.ok,
       status: response.status,
-      token: "",
+      token: '',
     };
     if (response.ok) {
-      const cookies = response.headers.get("set-cookie")?.split(";");
+      const cookies = response.headers.get('set-cookie')?.split(';');
       cookies?.forEach((c) => {
-        if (c.indexOf("JAUTHENTICATION") !== -1) {
-          this.authToken = c.split("=")[1];
-          debug("authToken: ", this._token);
+        if (c.indexOf('JAUTHENTICATION') !== -1) {
+          this.authToken = c.split('=')[1];
+          debug('authToken: ', this._token);
           result.token = this._token;
         }
       });
@@ -596,13 +596,13 @@ export class SignalKClient {
       `${this.protocol}://${this.hostname}:${this.port}/signalk/${this._version}/auth/logout`;
 
     debug(`put ${url}`);
-    const headers = new Headers({ "Content-Type": "application/json" });
+    const headers = new Headers({ 'Content-Type': 'application/json' });
     if (this._token) {
-      headers.append("Authorization", `JWT ${this._token}`);
+      headers.append('Authorization', `JWT ${this._token}`);
     }
 
     const options = {
-      method: "PUT",
+      method: 'PUT',
       headers: headers,
       body: null,
     };
@@ -620,15 +620,15 @@ export class SignalKClient {
    */
   async isLoggedIn(): Promise<boolean> {
     const response = await this.getLoginStatus();
-    return response.status === "loggedIn" ? true : false;
+    return response.status === 'loggedIn' ? true : false;
   }
 
   /** Fetch Signal K login status from server */
   getLoginStatus(): Promise<{ [key: string]: unknown }> {
     let url = `/skServer/loginStatus`;
-    if (this.server && this.server.info.id === "signalk-server-node") {
-      const ver = this.server.info["version"].split(".");
-      url = ver[0] === "1" && parseInt(ver[1]) < 36 //use legacy link for older versions
+    if (this.server && this.server.info.id === 'signalk-server-node') {
+      const ver = this.server.info['version'].split('.');
+      url = ver[0] === '1' && parseInt(ver[1]) < 36 //use legacy link for older versions
         ? `/loginstatus`
         : url;
     }
@@ -641,14 +641,14 @@ export class SignalKClient {
    */
   snapshot(context: string, time: string): Promise<{ [key: string]: unknown }> {
     if (!time) {
-      throw new Error("Error: No time value supplied!");
+      throw new Error('Error: No time value supplied!');
     }
-    time = time.slice(0, time.indexOf(".")) + "Z";
+    time = time.slice(0, time.indexOf('.')) + 'Z';
     let url = this.resolveHttpEndpoint();
     if (!url) {
-      throw new Error("Error: Unable to resolve URL!");
+      throw new Error('Error: Unable to resolve URL!');
     }
-    url = `${url.replace("api", "snapshot")}${
+    url = `${url.replace('api', 'snapshot')}${
       Path.contextToPath(
         context,
       )
@@ -671,7 +671,7 @@ export class SignalKClient {
     id?: string,
   ): Promise<{ [key: string]: unknown }> {
     if (!name) {
-      throw new Error("Error: Name not supplied!");
+      throw new Error('Error: Name not supplied!');
     }
 
     if (!id && !this.clientId) {
@@ -696,7 +696,7 @@ export class SignalKClient {
    */
   async checkAccessRequest(href: string): Promise<{ [key: string]: unknown }> {
     if (!href) {
-      throw new Error("Error: href not supplied!");
+      throw new Error('Error: href not supplied!');
     }
     return await this.get(href);
   }
@@ -710,12 +710,12 @@ export class SignalKClient {
   /** Target application id.
    * @private
    */
-  private _appId = "";
+  private _appId = '';
 
   /** Target application version.
    * @private
    */
-  private _appVersion = "";
+  private _appVersion = '';
 
   /** Return endpoint for target app. */
   private resolveAppDataEndpoint(
@@ -723,9 +723,9 @@ export class SignalKClient {
     appId: string,
   ): string {
     if (!context || !appId) {
-      return "";
+      return '';
     }
-    const url = this.resolveHttpEndpoint().replace("api", "applicationData");
+    const url = this.resolveHttpEndpoint().replace('api', 'applicationData');
     return `${url}${context}/${appId}/`;
   }
 
@@ -762,12 +762,12 @@ export class SignalKClient {
    * @param version Version of data
    */
   appDataKeys(
-    path = "",
+    path = '',
     context: APPDATA_CONTEXT = APPDATA_CONTEXT.USER,
     appId: string = this._appId,
     version: string = this._appVersion,
   ): Promise<{ [key: string]: unknown }> {
-    path = path.length != 0 && path[0] === "/" ? path.slice(1) : path;
+    path = path.length != 0 && path[0] === '/' ? path.slice(1) : path;
     let url = this.resolveAppDataEndpoint(context, appId);
     url += `${version}/${path}?keys=true`;
     return this.get(url);
@@ -780,12 +780,12 @@ export class SignalKClient {
    * @param version Version of data
    */
   appDataGet(
-    path = "",
+    path = '',
     context: APPDATA_CONTEXT = APPDATA_CONTEXT.USER,
     appId: string = this._appId,
     version: string = this._appVersion,
   ): Promise<{ [key: string]: unknown }> {
-    path = path.length != 0 && path[0] === "/" ? path.slice(1) : path;
+    path = path.length != 0 && path[0] === '/' ? path.slice(1) : path;
     let url = this.resolveAppDataEndpoint(context, appId);
     url += `${version}/${path}`;
     return this.get(url);
@@ -805,14 +805,14 @@ export class SignalKClient {
     version: string = this._appVersion,
   ): Promise<Response> {
     if (!path) {
-      throw new Error("Error: Invalid path!");
+      throw new Error('Error: Invalid path!');
     }
-    if (path[0] === "/") {
+    if (path[0] === '/') {
       path = path.slice(1);
     }
     const ep = this.resolveAppDataEndpoint(context, appId);
     if (!ep) {
-      throw new Error("Error: Invalid path!");
+      throw new Error('Error: Invalid path!');
     }
     return this.post(
       `${ep}${version}/${Path.dotToSlash(path)}`,
@@ -834,7 +834,7 @@ export class SignalKClient {
   ): Promise<Response> {
     const ep = this.resolveAppDataEndpoint(context, appId);
     if (!ep || !version) {
-      throw new Error("Error: Invalid path or version!");
+      throw new Error('Error: Invalid path or version!');
     }
     return this.post(`${ep}${version}`, value);
   }

@@ -1,18 +1,18 @@
-import { Alarm, AlarmType, Path } from "./utils.ts";
-import { SKServer } from "./signalk-client.ts";
-import { debug } from "./mod.ts";
+import { Alarm, AlarmType, Path } from './utils.ts';
+import { SKServer } from './signalk-client.ts';
+import { debug } from './mod.ts';
 
 /** Signal K HTTP API operations */
 export class SignalKHttp {
   /** Authentication token
    * @private
    */
-  private _token = "";
+  private _token = '';
 
   /** Signal K server information */
-  public server: SKServer = { version: "", id: "" };
+  public server: SKServer = { version: '', id: '' };
   /** Connection endpoint */
-  public endpoint = "";
+  public endpoint = '';
   /** API version to use */
   public version = 1;
 
@@ -62,14 +62,14 @@ export class SignalKHttp {
     }
     let ep: string;
     let path: string;
-    if (typeof p1 === "number") {
-      ep = this.endpoint.replace(new RegExp("/v[0-9]+/"), `/v${p1}/`);
+    if (typeof p1 === 'number') {
+      ep = this.endpoint.replace(new RegExp('/v[0-9]+/'), `/v${p1}/`);
       path = Path.dotToSlash(p2);
     } else {
       ep = this.endpoint;
       path = Path.dotToSlash(p1);
     }
-    if (path[0] === "/") {
+    if (path[0] === '/') {
       path = path.slice(1);
     }
     const url = `${ep}${path}`;
@@ -114,8 +114,8 @@ export class SignalKHttp {
     let path: string;
     let value;
     let msg;
-    if (typeof p1 === "number") {
-      ep = this.endpoint.replace(new RegExp("/v[0-9]+/"), `/v${p1}/`);
+    if (typeof p1 === 'number') {
+      ep = this.endpoint.replace(new RegExp('/v[0-9]+/'), `/v${p1}/`);
       path = Path.dotToSlash(p2);
       value = p3;
       msg = this.parseApiPut(p1, value);
@@ -125,19 +125,19 @@ export class SignalKHttp {
       value = p2;
       msg = this.parseApiPut(this.version, value);
     }
-    if (path[0] === "/") {
+    if (path[0] === '/') {
       path = path.slice(1);
     }
 
     const url = `${ep}${path}`;
     debug(`put ${url}`);
-    const headers = new Headers({ "Content-Type": "application/json" });
+    const headers = new Headers({ 'Content-Type': 'application/json' });
     if (this._token) {
-      headers.append("Authorization", `JWT ${this._token}`);
+      headers.append('Authorization', `JWT ${this._token}`);
     }
 
     const options: RequestInit = {
-      method: "PUT",
+      method: 'PUT',
       headers: headers,
       body: JSON.stringify(msg),
     };
@@ -176,32 +176,32 @@ export class SignalKHttp {
     let context: string;
     let value;
     let msg;
-    if (typeof p1 === "number") {
-      ep = this.endpoint.replace(new RegExp("/v[0-9]+/"), `/v${p1}/`);
-      context = p2 ? `${Path.contextToPath(p2)}/` : "";
+    if (typeof p1 === 'number') {
+      ep = this.endpoint.replace(new RegExp('/v[0-9]+/'), `/v${p1}/`);
+      context = p2 ? `${Path.contextToPath(p2)}/` : '';
       path = Path.dotToSlash(p3);
       value = p4;
       msg = this.parseApiPut(p1, value);
     } else {
       ep = this.endpoint;
-      context = p1 ? `${Path.contextToPath(p1)}/` : "";
+      context = p1 ? `${Path.contextToPath(p1)}/` : '';
       path = Path.dotToSlash(p2);
       value = p3;
       msg = this.parseApiPut(this.version, value);
     }
-    if (path[0] === "/") {
+    if (path[0] === '/') {
       path = path.slice(1);
     }
 
     const url = ep + context + path;
     debug(`put ${url}`);
-    const headers = new Headers({ "Content-Type": "application/json" });
+    const headers = new Headers({ 'Content-Type': 'application/json' });
     if (this._token) {
-      headers.append("Authorization", `JWT ${this._token}`);
+      headers.append('Authorization', `JWT ${this._token}`);
     }
 
     const options: RequestInit = {
-      method: "PUT",
+      method: 'PUT',
       headers: headers,
       body: JSON.stringify(msg),
     };
@@ -226,8 +226,8 @@ export class SignalKHttp {
     let ep: string;
     let path: string;
     let value;
-    if (typeof p1 === "number") {
-      ep = this.endpoint.replace(new RegExp("/v[0-9]+/"), `/v${p1}/`);
+    if (typeof p1 === 'number') {
+      ep = this.endpoint.replace(new RegExp('/v[0-9]+/'), `/v${p1}/`);
       path = Path.dotToSlash(p2);
       value = p3;
     } else {
@@ -235,18 +235,18 @@ export class SignalKHttp {
       path = Path.dotToSlash(p1);
       value = p2;
     }
-    if (path[0] === "/") {
+    if (path[0] === '/') {
       path = path.slice(1);
     }
     const url = `${ep}${path}`;
     debug(`post ${url}`);
-    const headers = new Headers({ "Content-Type": "application/json" });
+    const headers = new Headers({ 'Content-Type': 'application/json' });
     if (this._token) {
-      headers.append("Authorization", `JWT ${this._token}`);
+      headers.append('Authorization', `JWT ${this._token}`);
     }
 
     const options: RequestInit = {
-      method: "POST",
+      method: 'POST',
       headers: headers,
       body: JSON.stringify(value),
     };
@@ -268,25 +268,25 @@ export class SignalKHttp {
     }
     let ep: string;
     let path: string;
-    if (typeof p1 === "number") {
-      ep = this.endpoint.replace(new RegExp("/v[0-9]+/"), `/v${p1}/`);
+    if (typeof p1 === 'number') {
+      ep = this.endpoint.replace(new RegExp('/v[0-9]+/'), `/v${p1}/`);
       path = Path.dotToSlash(p2);
     } else {
       ep = this.endpoint;
       path = Path.dotToSlash(p1);
     }
-    if (path[0] === "/") {
+    if (path[0] === '/') {
       path = path.slice(1);
     }
     const url = `${ep}${path}`;
     debug(`get ${url}`);
-    const headers = new Headers({ "Content-Type": "application/json" });
+    const headers = new Headers({ 'Content-Type': 'application/json' });
     if (this._token) {
-      headers.append("Authorization", `JWT ${this._token}`);
+      headers.append('Authorization', `JWT ${this._token}`);
     }
 
     const options: RequestInit = {
-      method: "DELETE",
+      method: 'DELETE',
       headers: headers,
     };
     return await fetch(url, options);
@@ -304,10 +304,10 @@ export class SignalKHttp {
    */
   raiseAlarm(context: string, name: string, alarm: Alarm): Promise<Response>;
   raiseAlarm(context: string, type: AlarmType, alarm: Alarm): Promise<Response>;
-  raiseAlarm(context = "*", alarmId: string | AlarmType, alarm: Alarm) {
+  raiseAlarm(context = '*', alarmId: string | AlarmType, alarm: Alarm) {
     let path: string;
-    if (typeof alarmId === "string") {
-      path = alarmId.indexOf("notifications.") === -1
+    if (typeof alarmId === 'string') {
+      path = alarmId.indexOf('notifications.') === -1
         ? `notifications.${alarmId}`
         : alarmId;
     } else {
@@ -320,8 +320,8 @@ export class SignalKHttp {
    * @param context Signal K context
    * @param name Alarm name.
    */
-  clearAlarm(context = "*", name: string): Promise<Response> {
-    const path = name.indexOf("notifications.") === -1
+  clearAlarm(context = '*', name: string): Promise<Response> {
+    const path = name.indexOf('notifications.') === -1
       ? `notifications.${name}`
       : name;
     return this.putWithContext(context, path, null);
